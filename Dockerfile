@@ -31,11 +31,14 @@ RUN apt-get install -yqq unzip wget && \
     wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip && \
     unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/ 
 
+# get esurv repos
+ARG GITHUB_ACCESS_TOKEN
+RUN git clone https://$GITHUB_ACCESS_TOKEN@github.com/esurv/esurv_db_manager.git
+RUN git clone https://$GITHUB_ACCESS_TOKEN@github.com/esurv/esurv_rpa.git
+
 # install pip dependencies
-COPY esurv_rpa/requirements.txt requirements/requirements2.txt
-COPY esurv_db_manager/requirements.txt requirements/requirements3.txt
-COPY requirements.txt requirements/requirements4.txt
-RUN sed -e '$s/$/\n/' -s requirements/*.txt > requirements/requirements.txt
+RUN mkdir requirements && touch requirements/requirements.txt
+RUN sed -e '$s/$/\n/' -s esurv_rpa/requirements.txt esurv_db_manager/requirements.txt > requirements/requirements.txt
 
 RUN pip3 wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements/requirements.txt
 
@@ -68,8 +71,5 @@ COPY --from=builder /usr/local/bin/chromedriver /usr/local/bin/chromedriver
 ENV DISPLAY=:99
 
 # copy esurv folders
-COPY esurv_rpa/ esurv_rpa/
-COPY esurv_db_manager/ esurv_db_manager/
-
-# copy project code 
-COPY src/ .
+COPY --from=builder /usr/src/app/esurv_rpa/ esurv_rpa/
+COPY --from=builder /usr/src/app/esurv_db_manager/ esurv_db_manager/
