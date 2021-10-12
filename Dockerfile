@@ -33,8 +33,8 @@ RUN apt-get install -yqq unzip wget && \
 
 # get esurv repos
 ARG GITHUB_ACCESS_TOKEN
-RUN git clone https://$GITHUB_ACCESS_TOKEN@github.com/esurv/esurv_db_manager.git
-RUN git clone https://$GITHUB_ACCESS_TOKEN@github.com/esurv/esurv_rpa.git
+RUN git clone -b develop --single-branch https://$GITHUB_ACCESS_TOKEN@github.com/esurv/esurv_db_manager.git
+RUN git clone -b develop --single-branch https://$GITHUB_ACCESS_TOKEN@github.com/esurv/esurv_rpa.git
 
 # install pip dependencies
 RUN mkdir requirements && touch requirements/requirements.txt
